@@ -1,0 +1,7 @@
+version: "3.8"
+
+services:
+  tasks-api:
+    build: .
+    ports:
+      - "8080:8080"

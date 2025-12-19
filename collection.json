@@ -1,0 +1,193 @@
+{
+    "info": {
+      "name": "Simple Tasks API",
+      "_postman_id": "12345678-abcd-efgh-ijkl-1234567890ab",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Create task",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"title\": \"Test task\", \"description\": \"desc\" }"
+          },
+          "url": {
+            "raw": "http://localhost:8080/tasks",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8080",
+            "path": ["tasks"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test(\"Status code is 201\", function () {pm.response.to.have.status(201);});",
+                "var json = pm.response.json();",
+                "pm.test(\"Response has id\", function () {pm.expect(json).to.have.property('id');});"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "List tasks (no filter)",
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "http://localhost:8080/tasks",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8080",
+            "path": ["tasks"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test(\"Status 200\", function(){pm.response.to.have.status(200);});",
+                "pm.test(\"Response is array\", function(){pm.expect(pm.response.json()).to.be.an('array');});"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "List tasks (completed=true)",
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "http://localhost:8080/tasks?completed=true",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8080",
+            "path": ["tasks"],
+            "query": [
+              { "key": "completed", "value": "true" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test(\"Status 200\", function(){pm.response.to.have.status(200);});",
+                "var arr = pm.response.json();",
+                "pm.test(\"All completed are true\", function(){arr.forEach(function(it){pm.expect(it.completed).to.eql(true);});});"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Get existing task",
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "http://localhost:8080/tasks/1",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8080",
+            "path": ["tasks", "1"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test(\"Status 200 or 404 (depends)\", function(){pm.expect(pm.response.code).to.be.oneOf([200,404]);});"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Get non-existing task",
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "http://localhost:8080/tasks/9999",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8080",
+            "path": ["tasks", "9999"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test(\"Status 404\", function(){pm.response.to.have.status(404);});"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Update task",
+        "request": {
+          "method": "PUT",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"completed\": true }"
+          },
+          "url": {
+            "raw": "http://localhost:8080/tasks/1",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8080",
+            "path": ["tasks", "1"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test(\"Status 200 or 404\", function(){pm.expect(pm.response.code).to.be.oneOf([200,404]);});"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Delete task",
+        "request": {
+          "method": "DELETE",
+          "url": {
+            "raw": "http://localhost:8080/tasks/1",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8080",
+            "path": ["tasks", "1"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test(\"Status 204 or 404\", function(){pm.expect(pm.response.code).to.be.oneOf([204,404]);});"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+  
